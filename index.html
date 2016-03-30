@@ -16,290 +16,116 @@
     <meta property="og:image" content="undefined"/>
   
 
-  <link href="/bolg/favicon.png" rel="icon">
-  <link rel="alternate" href="/bolg/atom.xml" title="LikeStar" type="application/atom+xml">
+  
+    <link rel="alternative" href="/bolg/atom.xml" title="LikeStar" type="application/atom+xml">
+  
+  
+    <link href="/bolg/favicon.png" rel="icon">
+  
+  
+  <link rel="stylesheet" href="/bolg/css/bootstrap.min.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/bolg/css/font-awesome.css" media="screen" type="text/css">
   <link rel="stylesheet" href="/bolg/css/style.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/bolg/css/highlight.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/bolg/css/google-fonts.css" media="screen" type="text/css">
+  <link rel="stylesheet" href="/bolg/css/responsive.css" media="screen" type="text/css">  
+  <link rel="stylesheet" href="/bolg/css/sidenav.css" media="screen" type="text/css">  
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+  <script src="/bolg/js/jquery-2.0.3.min.js"></script>
+
+  <!-- analytics -->
   
 
 </head>
 
-
-<body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/bolg/">LikeStar</a></h1>
-  <h2><a href="/bolg/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/bolg/">Home</a></li>
-    
-      <li><a href="/bolg/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
-</header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-03-30T01:32:45.416Z"><a href="/bolg/2016/03/30/图片缩放/">2016-03-30</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/bolg/2016/03/30/图片缩放/">图片缩放demo</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>Html canvas练习，鼠标滚轮控制图片缩放比例，鼠标拖动图片。</p>
-<p><canvas id="canvas" style="display:block;margin:10px auto;border:1px solid #ccc;padding:0;"></canvas></p>
-<script>
-(function(){
-    var config = {
-        'imgSrc' : "/bolg/images/001.jpg",        // 图片地址
-        'canvasWidth' : 600,                    // 边框 宽
-        'canvasHeight' : 450,                    // 边框 高
-        'maxScale' : 4.0,                        // 最大比例
-        'minScale' : 0.1,                        // 最小比例
-        'scaleStep' : 0.05
-    };
-
-    var canvas = document.getElementById("canvas");
-    canvas.width = config.canvasWidth;
-    canvas.height = config.canvasHeight;
-    var _ctx = canvas.getContext("2d");
-
-    /**
-     * 判断是否移动
-     */ 
-    var _isMove = false;
-
-    /**
-     * 缩放比例
-     */
-    var scale = 1.0;
-
-    var lastStatus = {};
-
-    var _img = new Image();
-    _img.src = config.imgSrc;
-
-    /**
-     * 图片加载完成后 画图
-     */
-    _img.onload = function() {
-        lastStatus.imgWidth = _img.width;
-        lastStatus.imgHeight = _img.height;
-        lastStatus.x = canvas.width / 2 - _img.width / 2;
-        lastStatus.y = canvas.height / 2 - _img.height / 2;
-        drawImgByScale(canvas.width / 2, canvas.height / 2);
-    }
-
-    canvas.onmouseout = function () {
-        document.body.style.overflow = 'auto';
-        _isMove = false;
-        canvas.style.cursor = 'default';
-    };
-
-    canvas.onmouseup = function () {
-        _isMove = false;
-        canvas.style.cursor = 'default';
-    };
-
-    /**
-     * 鼠标按下以后 修改状态，并记录当前鼠标坐标
-     */
-    canvas.onmousedown = function(e) {
-        _isMove = true;
-        canvas.style.cursor = 'move';
-        var mXY = windowToCanvas(e.clientX, e.clientY);
-        lastStatus.mx = mXY.x;
-        lastStatus.my = mXY.y;
-    }
-
-    /**
-     * 鼠标移动时 重新画图
-     */
-    canvas.onmousemove = function(e) {
-        document.body.style.overflow = 'hidden';
-        if(_isMove) {
-            var currentXY = windowToCanvas(e.clientX, e.clientY);
-            drawImgByMove(currentXY.x, currentXY.y);
-        }
-    };
-
-    /**
-     * 鼠标滚轮事件
-     */
-    canvas.onmousewheel = function (e) {
-        if(e.wheelDelta > 0) {
-            scale = (scale >= config.maxScale) ? config.maxScale : scale + config.scaleStep;
-
-        } else {
-            scale = (scale <= config.minScale) ? config.minScale : scale - config.scaleStep;
-        }
-        var mXY = windowToCanvas(e.clientX, e.clientY);
-        drawImgByScale(mXY.x, mXY.y);
-    };
-
-    /**
-     * 火狐浏览器 鼠标滚轮事件\
-     */
-    canvas.addEventListener("DOMMouseScroll", function(e) {
-        if(e.detail > 0) {
-            scale = (scale >= config.maxScale) ? config.maxScale : scale + config.scaleStep;
-        } else {
-            scale = (scale <= config.minScale) ? config.minScale : scale - config.scaleStep;
-        }
-        var mXY = windowToCanvas(e.clientX, e.clientY);
-        drawImgByScale(mXY.x, mXY.y);
-    });
-
-    /**
-     * 按坐标和比例画图
-     */
-    function drawImgByScale(x, y) {
-        if(x >= lastStatus.x && x <= (lastStatus.x + lastStatus.imgWidth)    && y >= lastStatus.y && y <= (lastStatus.y + lastStatus.imgHeight)) {
-            var imgWidth = _img.width * scale;
-            var imgHeight = _img.height * scale;
-            var _x = x - (x - lastStatus.x) * imgWidth / lastStatus.imgWidth;
-            var _y = y - (y - lastStatus.y) * imgHeight / lastStatus.imgHeight;
-
-            _ctx.clearRect(0, 0, canvas.width, canvas.height);
-            _ctx.drawImage(_img, _x, _y, imgWidth, imgHeight);
-            lastStatus = {
-                imgWidth : imgWidth,
-                imgHeight : imgHeight,
-                x : _x,
-                y : _y,
-                mx : x,
-                my : y
-            };
-        }
-    }
-
-    /**
-     * 移动图片
-     */
-    function drawImgByMove(x, y) {
-        _ctx.clearRect(0, 0, canvas.width, canvas.height);
-        var _x = lastStatus.x + (x - lastStatus.mx);
-        var _y = lastStatus.y + (y - lastStatus.my);
-        _ctx.drawImage(_img, _x, _y, lastStatus.imgWidth, lastStatus.imgHeight);
-
-        lastStatus.mx = x;
-        lastStatus.my = y;
-        lastStatus.x = _x;
-        lastStatus.y = _y;
-    }
-
-    /**
-     * 窗口的左边换算成canvas坐标
-     */
-    function windowToCanvas(x, y) {
-        var _box = canvas.getBoundingClientRect();
-        return {
-            'x' : x - _box['left'],
-            'y' : y - _box['top']
-        };
-    }
-})();
-</script>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-03-29T23:52:19.111Z"><a href="/bolg/2016/03/30/hello-world/">2016-03-30</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/bolg/2016/03/30/hello-world/">Hello World</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-
-<nav id="pagination">
-  
-  
-  <div class="clearfix"></div>
-</nav></div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="搜索">
-    <input type="hidden" name="q" value="site:yoursite.com">
-  </form>
+<body id="body" data-spy="scroll" data-target=".toc">
+  <div class="container" id="container">
+	<div class="content">
+	  <div class="page-header">
+  <h1><a class="brand" href="#">LikeStar</a></h1>
 </div>
 
-  
+<div class="row page">
+	<div class="col-md-12">
+		<div class="panel-group" id="notebook">
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<a class="panel-title" data-toggle="collapse" data-parent="#notebook" href="#canvas">
+						<i class="fa fa-folder"></i> canvas		  
+				</div>
+				
+					<div id="canvas" class="panel-collapse collapse in">
+				
+						<div class="panel-body">
+							<ul class="post">
+								
+								    
+								        <li class="post-list-item"><a href="/bolg/2016/03/30/图片缩放/">图片缩放demo</a></li>
+								    
+								
+								    
+								
+							</ul>
+						</div>
+					</div>
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<a class="panel-title" data-toggle="collapse" data-parent="#notebook" href="#Scratch">
+						<i class="fa fa-folder"></i> Scratch		   
+				</div>
+				
+					<div id="Scratch" class="panel-collapse collapse in">
+				
+					    <div class="panel-body">
+						    <ul class="post">
+			
+			
+			    
+			                    
+			    
+			                    
+			                    <li class="post-list-item"><a href="/bolg/2016/03/30/hello-world/">Hello World</a></li>
+			                    
+			    
+				            </ul>
+				        </div>
+				    </div>
+			</div>
+			
+		</div><!-- accordion -->
+	</div>
+</div>
 
-  
-</aside>
-    <div class="clearfix"></div>
+	</div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
-  
+  <div class="container-narrow">
+	<footer> <p>
   &copy; 2016 ShenJinXiang
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+      with help from <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a> and <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a>. Theme by <a href="http://github.com/wzpan/hexo-theme-wixo/">Wixo</a>.    
+</p> </footer>
+  </div> <!-- container-narrow -->
+  
+<a id="gotop" href="#">   
+  <span>▲</span> 
+</a>
+
 <script src="/bolg/js/jquery.imagesloaded.min.js"></script>
 <script src="/bolg/js/gallery.js"></script>
+<script src="/bolg/js/bootstrap.min.js"></script>
+<script src="/bolg/js/jquery.tableofcontents.min.js"></script>
+<script src="/bolg/js/tocgenerator.min.js"></script>
+<script src="/bolg/js/main.js"></script>
 
 
 
@@ -311,6 +137,7 @@
   $('.fancybox').fancybox();
 })(jQuery);
 </script>
+
 
 </body>
 </html>
